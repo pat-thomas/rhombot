@@ -48,7 +48,7 @@
     whole))
 
 (comment
-  (let [notes [440 330 550 220]]
+  (let [notes [440 330 550 220 880]]
     (doseq [note notes]
       (do (buzzer note)
           (Thread/sleep 50))))
@@ -56,4 +56,22 @@
     (doseq [note notes]
       (do (bell note)
           (Thread/sleep 50))))
+  )
+
+(definst kick
+  [amp 0.5 decay 0.12 freq 30]
+  (* (/ (* (square freq (* Math/PI 0.5))
+           (square (* 1.01 freq) (* Math/PI 0.5)))
+        (sin-osc (* 0.501 freq) (* Math/PI 0.5)))
+     (env-gen (perc 0.1 decay) 1 1 0 1 FREE)
+     amp))
+
+(kick)
+
+(comment
+  (dotimes [_ 4]
+    (doseq [thing (shuffle (concat (repeat 10 true) (repeat 6 false)))]
+      (do (if thing
+            (kick 0.8 0 (rand-nth [30 60 90 120 150 180 210 240 270])))
+          (Thread/sleep 100))))
   )
